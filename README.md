@@ -1,5 +1,5 @@
-# Information processing capacity
-The information processing capacity (IPC) [1,2] is a measure to comprehensively examine computational capabilities of dynamial systems that receives random input 
+# Information Processing Capacity
+The information processing capacity (IPC) [1,2] is a measure to comprehensively examine computational capabilities of a dynamial system that receives random input 
 <img src="https://render.githubusercontent.com/render/math?math={\displaystyle u_t }#gh-light-mode-only">
 <img src="https://render.githubusercontent.com/render/math?math={\displaystyle\color{white} u_t }#gh-dark-mode-only">. 
 The system state 
@@ -20,7 +20,7 @@ We emulate the processed inputs
 <img src="https://render.githubusercontent.com/render/math?math={\displaystyle \hat{z}_t = \hat{w}^\top\cdot x_t. }#gh-light-mode-only">
 <img src="https://render.githubusercontent.com/render/math?math={\displaystyle\color{white} \hat{z}_t = \hat{w}^\top\cdot x_t. }#gh-dark-mode-only">
 
-Subsequently, we quantify the IPC as the amount of the held input using the following accuracy: 
+Subsequently, we quantify the IPC as the amount of the held input using the following emulation accuracy: 
 
 <img src="https://render.githubusercontent.com/render/math?math={\displaystyle C = 1 - \frac{\sum_t (\hat{z}_t-z_t)^2}{\sum_t z_t^2}. }#gh-light-mode-only">
 <img src="https://render.githubusercontent.com/render/math?math={\displaystyle\color{white} C = 1 - \frac{\sum_t (\hat{z}_t-z_t)^2}{\sum_t z_t^2}. }#gh-dark-mode-only"> 
@@ -50,10 +50,15 @@ Please install required libraries through the following procedure.
     pip install jupyter numpy matplotlib pandas cupy-cudaXXX
     ```
 
-# Example codes
-1. An echo state network (ESN)
+### Google Colaboratory
+If you do not have available GPU(s), you can use [Google Colaboratory](https://colab.research.google.com/?utm_source=scs-index), 
+which provides a free GPU with 12 GB memory (Jun 7th, 2022). 
+Here is the [sample code](https://colab.research.google.com/drive/13gzqOcnnejuJYh6yAPlX2bksWFQSFzNP?usp=sharing) of `sample1_esn.ipynb` on Google Colaboratory. 
 
-    First, we demonstrate IPCs of an ESN to explain basic usage of the library. 
+# Example Codes
+1. Echo state network
+
+    First, we demonstrate IPCs of an echo state network to explain basic usage of the library. 
     Please read `sample1_esn.ipynb` for details. 
     After running it, we get the following IPC decomposion, which summarizes capacities for each order of input. 
     The total capacity 
@@ -74,6 +79,13 @@ Please install required libraries through the following procedure.
     Even if your input distribution is not included in the eight ones, you can compute IPCs using arbitrary polynomial chaos (aPC) [2]. 
     `sample2_dist.ipynb` also provides how to use aPC using a complex distribution such as a mixed Gaussian one. 
 
+3. Individual IPC
+
+    When we would like to focus on not IPC summarized for each order but individual IPCs, we can easily compute and plot the individual ones. 
+    For example, the following figure illustrates the individual IPCs of the NARMA10 benchmark task model, ESN state, and output of NARMA10-trained ESN. 
+    `sample3_individual.ipynb` provides an example code to plot them. 
+
+    <img src="sample3_individual.png" width=350>
 
 
     
@@ -84,6 +96,9 @@ If you compute IPCs of your reservoir, please replace input, state, and a set of
 - version 0.10: 
 A version for single input. 
 You can compute IPCs using arbitrary input distribution except for bernoulli one. 
+- version 0.11: 
+We added `sample3_individual.ipynb` and information on Google Colaboratory. 
+Also, we modified a bug in `single_input_ipc.get_indivators()`. 
 
 # References 
 [1] Joni Dambre, David Verstraeten, Benjamin Schrauwen, and Serge Massar. ''Information processing capacity of dynamical systems.'' Scientific reports 2.1 (2012): 1-7.

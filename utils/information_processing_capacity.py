@@ -3,7 +3,7 @@
 import numpy as np
 import cupy as cp
 import pandas as pd
-import os,json
+import os,sys,json
 from utils.degdelaysets import single_input_degdelaysets
 from utils.polynomials import ipc_univariate_polynomials
 
@@ -56,6 +56,9 @@ class single_input_ipc(ipc):
 		self.degs = np.sort(np.unique([deg for deg,delay in self.degdelays]))
 		self.degmax = np.max(self.degs)
 		self.delaymax = np.max([delay for deg,delay in self.degdelays])
+		if self.delaymax>self.Two:
+			print('Usage: maximum delay must be less than or equal to washout time')
+			sys.exit()
 		self.Nseed = Nseed	# Number of shuffle surrogates
 		self.poly = poly	# Polynomial type
 		self.poly_params = poly_params
@@ -164,7 +167,7 @@ class single_input_ipc(ipc):
 	def max_delay(self,degdelayset):
 		return np.max([int(delay) for delay in degdelayset.replace('[','').replace(']','').split(', ')[1::2]])
 
-	def get_indicators(self,npzname,paths,th_scale=None,th_isolate=0.99):
+	def get_indicators(self,npzname,paths,th_scale=None,th_isolate=0.99,display=False):
 		if th_scale!=None:
 			self.th_scale = th_scale
 
@@ -177,8 +180,6 @@ class single_input_ipc(ipc):
 		for i,path in enumerate(paths):
 			self.load_config(path)
 			self.ranks[i] = self.rank
-			# Added on version 1.1
-			self.Neffs[i] = self.Neff
 
 			for j,[deg,delay] in enumerate(self.degdelays):
 				fn = '%s_ipc_%d_%d.pkl'%(path,deg,delay)
@@ -186,7 +187,7 @@ class single_input_ipc(ipc):
 				if os.path.exists(fn) & os.path.exists(sfn):
 					ipcs = pd.read_pickle(fn)
 					surs = pd.read_pickle(sfn)
-					truncated = self.threshold(ipcs,surs,deg,delay,th_scale=self.th_scale,display=False)
+					truncated = self.threshold(ipcs,surs,deg,delay,th_scale=self.th_scale,display=display)
 					#
 					Ctot_d = np.sum(truncated['ipcs'].values)
 					self.Ctots[i] += Ctot_d
@@ -206,16 +207,22 @@ class single_input_ipc(ipc):
 		for i in self.indexlist:
 			exec('self.%s = npz[\'%s\']'%(i,i))
 
-	def get_individuals(self,degs,degdelaysets,paths,th_scale=None):
+	def get_individuals(self,degdelaysets,paths,th_scale=None):
 		if th_scale is not None:
 			self.th_scale = th_scale
 
 		#Extract individual IPCs
 		N = len(paths)
-		indiv_ipcs = np.zeros((N,len(degdelaysets)))
-		rest_ipcs,Ctots = np.zeros((N,len(self.degs))),np.zeros((N,len(self.degs)))
+		labels = []
+		indiv_ipcs = np.zeros((N,len(degdelaysets)+len(self.degdelays)))
+		degdelaysets = [ self.degdelaysets.sort_degdelayset(degdelayset) for degdelayset in degdelaysets ]
+		degs = [ np.array(ddset)[:,0].sum() for ddset in degdelaysets ]
+		degdelaysets = [degdelaysets[i] for i in np.argsort(degs)]
+		degs = np.sort(degs)
+		
 		for i,path in enumerate(paths):
-			for j,[deg,delay] in enumerate(self.degdelays):
+			k = 0
+			for deg,delay in self.degdelays:
 				#Load IPCs and surrogate data
 				ipcs = pd.read_pickle('%s_ipc_%d_%d.pkl'%(path,deg,delay))
 				surs = pd.read_pickle('%s_sur_%d_%d.pkl'%(path,deg,delay))
@@ -223,20 +230,49 @@ class single_input_ipc(ipc):
 				truncated = self.threshold(ipcs,surs,deg,delay,display=False)
 				ipcs = truncated['ipcs'].values
 				dds = truncated['degdelaysets'].values
-				#Total IPC for each degree
-				Ctots[i,j] += np.sum(ipcs)
+				#
+				degdelaysets_deg = [ddset for [deg_indiv,ddset] in zip(degs,degdelaysets) if deg_indiv==deg]
 				#Individual IPC
 				total_indiv_ipc = 0
-				for k,degdelayset in enumerate(degdelaysets):
+				for degdelayset in degdelaysets_deg:
 					indiv_ipc = np.sum(ipcs[dds==str(degdelayset)])
 					indiv_ipcs[i,k] += indiv_ipc
 					total_indiv_ipc += indiv_ipc
+					k += 1
 				#Summarize the rest of dth-order IPCs (i.e., IPCs other than individual IPCs)
-				rest_ipcs[i,j] = Ctots[i,j] - total_indiv_ipc
+				indiv_ipcs[i,k] = np.sum(ipcs) - total_indiv_ipc
+				k += 1
+				# print(k)
 
-		str_ddsets = [ str(ddset) for ddset in degdelaysets ]
-		self.indiv = pd.DataFrame(indiv_ipcs,columns=str_ddsets)
-		self.rest = pd.DataFrame(rest_ipcs,columns=self.degs)
+		##### Label #####
+		labels,degs_indiv = [],[]
+		for deg,delay in self.degdelays:
+			degdelaysets_deg = [ddset for [deg_indiv,ddset] in zip(degs,degdelaysets) if deg_indiv==deg]
+			for degdelayset in degdelaysets_deg:
+				labels.append(str(degdelayset).replace('[','{').replace(']','}'))
+				degs_indiv.append(deg)
+			labels.append( 'Rest of %s'%self.degree_label(deg) if len(degdelaysets_deg)>0 else self.degree_label(deg) )
+			degs_indiv.append(deg)
+
+		print('degs.shape',len(degs_indiv))
+		print('indiv_ipcs.shape',indiv_ipcs.shape)
+		df1 = pd.DataFrame({'deg':degs_indiv,'degdelaysets':labels})
+		df2 = pd.DataFrame(indiv_ipcs.T)
+		#self.indiv = pd.DataFrame(np.vstack([degs_indiv,indiv_ipcs]),columns=labels)
+		self.indiv = pd.concat([df1,df2],axis=1)
+		print(self.indiv,self.indiv.shape)
+		# print('aaa')
+
+	def degree_label(self,deg):
+		if (deg==1) or ((deg%10==1) and (deg>20)):
+			l = '%dst'%deg
+		elif (deg==2) or ((deg%10==2) and (deg>20)):
+			l = '%dnd'%deg
+		elif (deg==3) or ((deg%10==3) and (deg>20)):
+			l = '%drd'%deg
+		else:
+			l = '%dth'%deg
+		return l
 
 
 

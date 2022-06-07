@@ -70,6 +70,12 @@ class single_input_degdelaysets:
 			threshold_index.append(idx)
 		return threshold_index
 
+	def sort_degdelayset(self,degdelayset):
+		ddset = np.array(degdelayset)
+		ddset = ddset[np.argsort(ddset[:,1])]
+		ddset = ddset[np.argsort(ddset[:,0])]
+		return ddset.tolist()
+
 	def make_degdelaysets(self,deg,delay):
 		print('Making degdelaysets of %d-order %d-delay'%(deg,delay))
 
@@ -87,10 +93,7 @@ class single_input_degdelaysets:
 		delayset = np.arange(1 if self.zerobased==False else 0,delay+1)
 		for degset in degsets:
 			for degdelayset in self.degdelaysets(degset,delayset.tolist()):
-				ddset = np.array(degdelayset)
-				ddset = ddset[np.argsort(ddset[:,1])]
-				ddset = ddset[np.argsort(ddset[:,0])]
-				degdelaysets.append(ddset.tolist())
+				degdelaysets.append( self.sort_degdelayset(degdelayset) )
 		if len(degsets)>1:
 			degdelaysets = np.unique(degdelaysets).tolist()
 		# print('degdelaysets',degdelaysets,len(degdelaysets))
