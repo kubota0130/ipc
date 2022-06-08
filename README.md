@@ -43,7 +43,8 @@ Please install required libraries through the following procedure.
     ```
     /usr/local/cuda/bin/nvcc --version
     ```
-2. Check your CuPy version [here](https://docs.cupy.dev/en/stable/install.html#installing-cupy)
+2. Check your CuPy version 
+<a href="https://docs.cupy.dev/en/stable/install.html#installing-cupy" target="_blank" rel="noopener noreferrer">here</a>
 
 3. Install the libraries by 
     ```
@@ -51,9 +52,10 @@ Please install required libraries through the following procedure.
     ```
 
 ### Google Colaboratory
-If you do not have available GPU(s), you can use [Google Colaboratory](https://colab.research.google.com/?utm_source=scs-index), 
+If you do not have available GPU(s), you can use <a href="https://colab.research.google.com/?utm_source=scs-index" target="_blank" rel="noopener noreferrer">Google Colaboratory</a>, 
 which provides a free GPU with 12 GB memory (Jun 7th, 2022). 
-Here is the [sample code](https://colab.research.google.com/drive/13gzqOcnnejuJYh6yAPlX2bksWFQSFzNP?usp=sharing) of `sample1_esn.ipynb` on Google Colaboratory. 
+Here is the 
+<a href="https://colab.research.google.com/drive/13gzqOcnnejuJYh6yAPlX2bksWFQSFzNP?usp=sharing" target="_blank" rel="noopener noreferrer">sample code</a> of `sample1_esn.ipynb` on Google Colaboratory. 
 
 # Example Codes
 1. Echo state network
@@ -101,6 +103,10 @@ We added `sample3_individual.ipynb` and information on Google Colaboratory.
 Also, we modified a bug in `single_input_ipc.get_indivators()`. 
 
 # References 
-[1] Joni Dambre, David Verstraeten, Benjamin Schrauwen, and Serge Massar. ''Information processing capacity of dynamical systems.'' Scientific reports 2.1 (2012): 1-7.
+[1] Joni Dambre, David Verstraeten, Benjamin Schrauwen, and Serge Massar. ''
+<a href="https://www.nature.com/articles/srep00514" target="_blank" rel="noopener noreferrer">Information processing capacity of dynamical systems.</a>
+'' Scientific reports 2.1 (2012): 1-7.
 
-[2] Tomoyuki Kubota, Hirokazu Takahashi, and Kohei Nakajima. ''Unifying framework for information processing in stochastically driven dynamical systems.'' Physical Review Research 3.4 (2021): 043135.
+[2] Tomoyuki Kubota, Hirokazu Takahashi, and Kohei Nakajima. ''
+<a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.3.043135" target="_blank" rel="noopener noreferrer">Unifying framework for information processing in stochastically driven dynamical systems.</a>
+'' Physical Review Research 3.4 (2021): 043135.
