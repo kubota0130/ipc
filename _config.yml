@@ -1,4 +1,4 @@
-theme: jekyll-theme-slate
+theme: jekyll-theme-hacker
 google_analytics: UA-231709064-1
 plugins:
   - jekyll-sitemap
