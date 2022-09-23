@@ -28,22 +28,20 @@ class ipc:
 		finfo = np.finfo(x.dtype).eps if finfo is None else finfo
 		# Determine threshold for singular values
 		if thresh=='N':
-			eps =  (sigma**2).max()*N*finfo
+			eps =  sigma.max()*N*finfo
 		else: # self.thresh=='sqrt'
-			eps =  (sigma**2).max()*0.5*np.sqrt(2*N+1)*finfo
+			eps =  sigma.max()*0.5*np.sqrt(2*N+1)*finfo
 		if rank==None:
-			index = np.where((sigma**2)>eps)[0]
+			index = np.where(sigma>eps)[0]
 		else:
 			index = np.arange(rank)
 		P = v[index]
 
 		return P,thresh,finfo
 
-	def get_coef(self,P,z):
-		return cp.dot(P,z)/cp.sqrt(cp.dot(z,z))
+	get_coef = lambda self,P,z : cp.dot(P,z)/cp.sqrt(z.dot(z))
+	get_ipc = lambda self,P,z : cp.sum(self.get_coef(P,z)**2)
 
-	def get_ipc(self,P,z):
-		return cp.sum( (cp.dot(P,z)/cp.sqrt(cp.dot(z,z)))**2 )
 
 
 
@@ -102,9 +100,9 @@ class single_input_ipc(ipc):
 		for c in self.configlist:
 			exec('self.%s = d[\'%s\']'%(c,c))
 
+	target = lambda self,bases,ddset : cp.prod(cp.stack([bases[deg,self.Two-delay:self.Two+self.T-delay] for deg,delay in ddset]),0)
+
 	def compute(self,degree,delay,**kwargs):
-		Two = self.Two
-		T = self.T
 		# Convert numpy.array to cupy.array
 		P = cp.array(self.P)
 		# Load families of sets of degrees and delays
@@ -112,7 +110,7 @@ class single_input_ipc(ipc):
 
 		if self.rank>0:
 			##### Compute IPCs
-			ipcs = cp.array([ self.get_ipc(P,cp.prod(cp.stack([self.bases[deg,Two-delay:Two+T-delay] for deg,delay in ddset]),0)) for ddset in ddsets ])
+			ipcs = cp.array([ self.get_ipc(P,self.target(self.bases,ddset)) for ddset in ddsets ])
 			str_ddsets = [ str(ddset) for ddset in ddsets]
 			ipcdf = pd.DataFrame({'degdelaysets':str_ddsets,'ipcs':cp.asnumpy(ipcs)})
 
@@ -129,7 +127,7 @@ class single_input_ipc(ipc):
 				univariate_polys = ipc_univariate_polynomials(u,degree,self.poly,**self.poly_params)
 				bases.append( univariate_polys.bases )
 			# 
-			ipcs = [ cp.array([ self.get_ipc(P,cp.prod(cp.stack([bases[seed][deg,Two-delay:Two+T-delay] for deg,delay in ddset]),0)) for ddset in ddsets ]) for seed in range(self.Nseed) ]
+			ipcs = [ cp.array([ self.get_ipc(P,self.target(bases[seed],ddset)) for ddset in ddsets ]) for seed in range(self.Nseed) ]
 			surrogate = cp.asnumpy( cp.vstack([c for c in ipcs]).T )
 			# 
 			str_ddsets = [ str(ddset) for ddset in ddsets ]

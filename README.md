@@ -58,9 +58,9 @@ Here is the [sample code](https://colab.research.google.com/drive/13gzqOcnnejuJY
 Note that, if 12-hour time limit is over or it is not used for 90 minutes, it will shut down and erase your data. 
 
 # Example Codes
-1. Echo state network (ESN)
+1. Echo state network
 
-    First, we demonstrate IPCs of an ESN to explain basic usage of the library. 
+    First, we demonstrate IPCs of an echo state network (ESN) to explain basic usage of the library. 
     Please read `sample1_esn.ipynb` for details. 
     After running it, we get the following IPC decomposion, which summarizes capacities for each order of input. 
     The total capacity 
@@ -101,6 +101,8 @@ You can compute IPCs using arbitrary input distribution except for bernoulli one
 - version 0.11: 
 We added `sample3_individual.ipynb` and information on Google Colaboratory. 
 Also, we modified a bug in `single_input_ipc.get_indivators()`. 
+- version 0.12: 
+We modified bugs in `ipc.singular_value_decomposition()`. 
 
 # References 
 [1] Joni Dambre, David Verstraeten, Benjamin Schrauwen, and Serge Massar. ''[Information processing capacity of dynamical systems.](https://www.nature.com/articles/srep00514)'' Scientific reports 2.1 (2012): 1-7.
