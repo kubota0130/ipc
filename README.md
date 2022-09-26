@@ -38,6 +38,14 @@ Under the assumption that the state is a function of only input history
 
 # Environment
 The scripts use a GPU to compute IPCs fast and adopt CuPy library for multiprocessing. 
+
+### Google Colaboratory
+If you do not have available GPU(s), you can use [Google Colaboratory](https://colab.research.google.com/?utm_source=scs-index), 
+which provides a free GPU with 12 GB memory (as of Jun 7th, 2022). 
+Here is the [sample code](https://colab.research.google.com/drive/13gzqOcnnejuJYh6yAPlX2bksWFQSFzNP?usp=sharing) of `sample1_esn.ipynb` on Google Colaboratory. 
+Note that, if 12-hour time limit is over or it is not used for 90 minutes, it will shut down and erase your data. 
+
+### Using your GPU
 Please install required libraries through the following procedure. 
 1. Check your CUDA version by 
     ```
@@ -50,12 +58,6 @@ Please install required libraries through the following procedure.
     ```
     pip install jupyter numpy matplotlib pandas cupy-cudaXXX
     ```
-
-### Google Colaboratory
-If you do not have available GPU(s), you can use [Google Colaboratory](https://colab.research.google.com/?utm_source=scs-index), 
-which provides a free GPU with 12 GB memory (as of Jun 7th, 2022). 
-Here is the [sample code](https://colab.research.google.com/drive/13gzqOcnnejuJYh6yAPlX2bksWFQSFzNP?usp=sharing) of `sample1_esn.ipynb` on Google Colaboratory. 
-Note that, if 12-hour time limit is over or it is not used for 90 minutes, it will shut down and erase your data. 
 
 # Example Codes
 1. Echo state network
