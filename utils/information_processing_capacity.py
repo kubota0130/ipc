@@ -28,11 +28,11 @@ class ipc:
 		finfo = np.finfo(x.dtype).eps if finfo is None else finfo
 		# Determine threshold for singular values
 		if thresh=='N':
-			eps =  sigma.max()*N*finfo
+			eps =  (sigma**2).max()*N*finfo
 		else: # self.thresh=='sqrt'
-			eps =  sigma.max()*0.5*np.sqrt(2*N+1)*finfo
+			eps =  (sigma**2).max()*0.5*np.sqrt(2*N+1)*finfo
 		if rank==None:
-			index = np.where(sigma>eps)[0]
+			index = np.where((sigma**2)>eps)[0]
 		else:
 			index = np.arange(rank)
 		P = v[index]
