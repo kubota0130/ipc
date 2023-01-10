@@ -105,7 +105,7 @@ We added `sample3_individual.ipynb` and information on Google Colaboratory.
 Also, we modified a bug in `single_input_ipc.get_indivators()`. 
 - version 0.12: 
 ~~We modified bugs in `ipc.singular_value_decomposition()`.~~
-It turned out that they were not bugs, which occurred on 23rd Sep 2022 and were fixed on 10th Jan 2023 and might affect your system's rank and capacities. I deeply apologize for these mistakes. 
+It turned out that they were not bugs, which occurred on Sep 23rd 2022 and were fixed on Jan 10th 2023 and might affect your system's rank and capacities. I deeply apologize for these mistakes. 
 
 # References 
 [1] Joni Dambre, David Verstraeten, Benjamin Schrauwen, and Serge Massar. ''[Information processing capacity of dynamical systems.](https://www.nature.com/articles/srep00514)'' Scientific reports 2.1 (2012): 1-7.
