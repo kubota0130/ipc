@@ -162,6 +162,45 @@ class single_input_ipc(ipc):
 
 		return truncated
 
+	# 1-dimentional memory function
+	def mf1d(self,path,th_scale,maxdelay=None):
+		self.th_scale = th_scale
+		if maxdelay==None:
+			degdelays = np.array(self.degdelays)
+			maxdelay = degdelays[degdelays[:,0]==1][0][1]
+		ipcs = pd.read_pickle('%s_ipc_1_%d.pkl'%(path,maxdelay))
+		surs = pd.read_pickle('%s_sur_1_%d.pkl'%(path,maxdelay))
+		truncated = self.threshold(ipcs,surs,1,maxdelay,display=False)
+		ipcs = truncated['ipcs'].values
+		delays = np.arange(1-self.zerobased,maxdelay)
+		mf = []
+		for d in delays:
+			c = truncated['ipcs'].values[truncated['degdelaysets'].values=='[[1, %d]]'%d]
+			mf.append(c[0] if len(c)>0 else 0)
+		return delays,mf
+
+	# 2-dimentional memory function
+	def mf2d(self,path,th_scale,maxdelay=None):
+		self.th_scale = th_scale
+		if maxdelay==None:
+			degdelays = np.array(self.degdelays)
+			maxdelay = degdelays[degdelays[:,0]==2][0][1]
+		ipcs = pd.read_pickle('%s_ipc_2_%d.pkl'%(path,maxdelay))
+		surs = pd.read_pickle('%s_sur_2_%d.pkl'%(path,maxdelay))
+		truncated = self.threshold(ipcs,surs,2,maxdelay,display=False)
+		ipcs = truncated['ipcs'].values
+		delays = np.arange(1-self.zerobased,maxdelay)
+		mf = np.nan*np.zeros((maxdelay+self.zerobased-1,maxdelay+self.zerobased-1))
+		for i,d1 in enumerate(delays):
+			c = truncated['ipcs'].values[truncated['degdelaysets'].values=='[[2, %d]]'%d1]
+			mf[i,i] = c[0] if len(c)>0 else 0
+
+			for j,d2 in enumerate(delays):
+				if i<j:
+					c = truncated['ipcs'].values[truncated['degdelaysets'].values=='[[1, %d], [1, %d]]'%(d1,d2)]
+					mf[i,j] = c[0] if len(c)>0 else 0
+		return delays,mf
+
 	def max_delay(self,degdelayset):
 		return np.max([int(delay) for delay in degdelayset.replace('[','').replace(']','').split(', ')[1::2]])
 
