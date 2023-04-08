@@ -80,7 +80,14 @@ Please install required libraries through the following procedure.
 
     The IPC decomposition illustrates the degree of processed input but does not provide information on delays. To focus on memory length, `sample2_memory_function.ipynb` demonstrates how to depict first- and second-order memory functions. 
     
-    <img src="sample2_1d_memory_function.png" width=220><img src="sample2_2d_memory_function.png" width=176>
+    <img src="sample2_1d_memory_function.png" width=300><img src="sample2_2d_memory_function.png" width=240>
+
+    The capacities are calculated from time-series data with a finite length, which introduces a bias towards zero capacities. 
+    To eliminate the non-zero capacities, we use the shuffle surrogate method [2], which calculates a statistical threshold from surrogates. 
+    These surrogates are capacities calculated using target time-series that have been shuffled in the time direction, and they reflect the finite length of the time-series. 
+    If a capacity falls within the distribution of surrogates, we set its value to 0. 
+
+    <img src="sample2_1d_surrogate.png" width=540>
 
 3. Individual IPC
 
@@ -92,7 +99,7 @@ Please install required libraries through the following procedure.
 
 4. Input distribution
 
-    The input for IPC must be random but you can use an arbitrary type of input distribution other than uniform random input [2]. 
+    The input for IPC must be random but can follow an arbitrary type of distribution other than the uniform one [2]. 
     `sample4_dist.ipynb` explains how to use seven other basic distributions. 
     Even if your input distribution is not included in the eight ones, you can compute IPCs using arbitrary polynomial chaos (aPC) [2]. 
     `sample4_dist.ipynb` also provides how to use aPC using a complex distribution such as a mixed Gaussian one. 
@@ -112,7 +119,7 @@ Also, we modified a bug in `single_input_ipc.get_indivators()`.
 ~~We modified bugs in `ipc.singular_value_decomposition()`.~~
 It turned out that they were not bugs, which occurred on Sep 23rd 2022 and were fixed on Jan 10th 2023 and might affect your system's rank and capacities. I deeply apologize for these mistakes. 
 - version 0.13: We added `sample2_memory_function.ipynb`, as well as methods `mf1d` and `mf2d`. 
-
+- version 0.14: We added explanations of the shuffle surrogate method to `sample2_memory_function.ipynb`. 
 # References 
 [1] Joni Dambre, David Verstraeten, Benjamin Schrauwen, and Serge Massar. ''[Information processing capacity of dynamical systems.](https://www.nature.com/articles/srep00514)'' Scientific reports 2.1 (2012): 1-7.
 
